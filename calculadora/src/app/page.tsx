@@ -5,36 +5,44 @@ import styles from './page.module.css';
 export default function Home() {
   const [display, setDisplay] = useState('0');
   const [expression, setExpression] = useState('');
-  const [base, setBase] = useState(100);
+  const [currentValue, setCurrentValue] = useState('');
 
   const handleInput = (value: string) => {
-    if (value === 'C') {
-      // Borrar todo
-      setDisplay('0');
-      setExpression('');
-    } else if (value === '=') {
-      try {
-        // Evaluar la expresión y calcular el porcentaje
-        const result = eval(expression);
-        const percentage = (result / base) * 100;
-        const roundedPercentage = Math.round(percentage);
-        setDisplay(roundedPercentage.toString());
-        setExpression(roundedPercentage.toString());
-      } catch (error) {
-        // Manejar errores de expresión inválida
-        setDisplay('Error');
+    switch (value) {
+      case 'C':
+        setDisplay('0');
         setExpression('');
-      }
-    } else if (value === '%') {
-      // Cambiar la base al último número en la expresión
-      setBase(parseFloat(expression));
-      setExpression(expression + value);
-      setDisplay(expression + value);
-    } else {
-      // Agregar el valor a la expresión
-      const newExpression = expression + value;
-      setExpression(newExpression);
-      setDisplay(newExpression);
+        setCurrentValue('');
+        break;
+      case '=':
+        try {
+          const result = eval(expression);
+          setDisplay(result.toString());
+          setExpression(result.toString());
+        } catch (error) {
+          setDisplay('Error');
+          setExpression('');
+        }
+        break;
+      case '%':
+        try {
+          if (currentValue !== '') {
+            const percentage = (parseFloat(currentValue) / 100).toString();
+            setDisplay(percentage);
+            setExpression(expression + '*' + percentage);
+            setCurrentValue('');
+          }
+        } catch (error) {
+          setDisplay('Error');
+          setExpression('');
+        }
+        break;
+      default:
+        const newExpression = expression + value;
+        setExpression(newExpression);
+        setCurrentValue(newExpression);
+        setDisplay(newExpression);
+        break;
     }
   };
 
