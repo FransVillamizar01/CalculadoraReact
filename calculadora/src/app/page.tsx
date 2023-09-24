@@ -5,37 +5,37 @@ import styles from './page.module.css';
 export default function Home() {
   const [display, setDisplay] = useState('0');
   const [expression, setExpression] = useState('');
+  const [base, setBase] = useState(100);
 
-  const handleInput = (value) => {
+  const handleInput = (value: string) => {
     if (value === 'C') {
       // Borrar todo
       setDisplay('0');
       setExpression('');
     } else if (value === '=') {
       try {
-        // Analizar la expresión y calcular el resultado
-        const result = calculateExpression(expression);
-        setDisplay(result.toString());
-        setExpression(result.toString());
+        // Evaluar la expresión y calcular el porcentaje
+        const result = eval(expression);
+        const percentage = (result / base) * 100;
+        const roundedPercentage = Math.round(percentage);
+        setDisplay(roundedPercentage.toString());
+        setExpression(roundedPercentage.toString());
       } catch (error) {
         // Manejar errores de expresión inválida
         setDisplay('Error');
         setExpression('');
       }
+    } else if (value === '%') {
+      // Cambiar la base al último número en la expresión
+      setBase(parseFloat(expression));
+      setExpression(expression + value);
+      setDisplay(expression + value);
     } else {
       // Agregar el valor a la expresión
       const newExpression = expression + value;
       setExpression(newExpression);
       setDisplay(newExpression);
     }
-  };
-
-  const calculateExpression = (expression) => {
-    // Reemplazar "%" con "/100" en la expresión
-    const expressionWithDivision = expression.replace(/%/g, '/100');
-
-    // Evaluar la expresión y devolver el resultado
-    return eval(expressionWithDivision);
   };
 
   return (
